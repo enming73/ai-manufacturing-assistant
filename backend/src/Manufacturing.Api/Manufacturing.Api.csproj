@@ -2,5 +2,6 @@
   <ItemGroup>
     <ProjectReference Include="../Manufacturing.Application/Manufacturing.Application.csproj"/>
     <ProjectReference Include="../Manufacturing.Infrastructure/Manufacturing.Infrastructure.csproj"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14" PrivateAssets="all"/>
   </ItemGroup>
 </Project>

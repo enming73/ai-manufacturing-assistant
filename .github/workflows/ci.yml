@@ -1,10 +1,22 @@
-name: foundation
+name: manufacturing
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
   checks:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.2-pg17
+        env:
+          POSTGRES_USER: manufacturing_test
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: ci-temporary-test-password
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U manufacturing_test -d postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -20,6 +32,8 @@ jobs:
           version: 0.10.9
           python-version: '3.12'
       - run: dotnet test backend/Manufacturing.slnx --configuration Release
+        env:
+          TEST_POSTGRES_CONNECTION: Host=localhost;Port=55432;Database=postgres;Username=manufacturing_test;Password=ci-temporary-test-password
       - run: npm ci && npm test && npm run build
         working-directory: frontend
       - run: uv sync --frozen && uv run --frozen pytest
@@ -34,6 +48,7 @@ jobs:
           curl --fail http://localhost:8000/health
           curl --fail http://localhost:5173/
           curl --fail http://localhost:5173/api/health
+          python3 scripts/smoke-api.py
           docker compose exec -T postgres psql -U manufacturing -d manufacturing -c "SELECT extversion FROM pg_extension WHERE extname = 'vector';"
       - name: Compose diagnostics
         if: failure()
