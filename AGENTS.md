@@ -14,7 +14,7 @@ The project demonstrates:
 - Reliable software engineering and DevOps
 
 This is a standalone demonstration project.
-Do not use proprietary ASMPT or employer information.
+Do not use proprietary employer or third-party information.
 
 ## Technology stack
 

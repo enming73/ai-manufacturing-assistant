@@ -1,6 +1,6 @@
 # AI Manufacturing Assistant
 
-A standalone SMT troubleshooting demonstration using only synthetic data. Not affiliated with ASMPT or any employer. Phase 1 provides a runnable service foundation; diagnosis and production datasets are not implemented.
+A standalone SMT troubleshooting demonstration using only synthetic data. Not affiliated with any employer. Phase 1 provides a runnable service foundation; diagnosis and production datasets are not implemented.
 
 ## Start with Docker
 
