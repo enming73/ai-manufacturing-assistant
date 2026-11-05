@@ -34,6 +34,25 @@ public sealed class HealthTests
         Assert.Equal("manufacturing-api", body.RootElement.GetProperty("service").GetString());
     }
 
+    [Theory]
+    [InlineData("/api/lines")]
+    [InlineData("/api/lines/3/metrics")]
+    public async Task Unavailable_database_returns_sanitized_problem_details(string path)
+    {
+        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("ConnectionStrings:Postgres",
+                "Host=127.0.0.1;Port=1;Database=test;Username=test;Password=secret-test-password;Timeout=1");
+        });
+        using var client = factory.CreateClient();
+        using var response = await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("secret-test-password", body);
+        Assert.DoesNotContain("Npgsql", body);
+    }
+
     private sealed class StubHealthCheck(bool healthy) : IHealthCheck
     {
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)

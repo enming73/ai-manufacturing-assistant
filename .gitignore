@@ -9,3 +9,7 @@
 **/.pytest_cache/
 **/.venv/
 *.pyc
+
+# Local browser verification artifacts
+output/playwright/
+.playwright-cli/
